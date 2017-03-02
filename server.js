@@ -1,8 +1,15 @@
 var express = require('express');
 var morgan = require('morgan');
 var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
+var ejs = require('ejs');
+var engine = require('ejs-mate');
 var config = require('./config');
+var User = require('./models/user');
+
 var app = express();
+
+
 
 mongoose.connect(config.database, function(err) {
     if (err) {
@@ -14,12 +21,22 @@ mongoose.connect(config.database, function(err) {
 
 
 //Middleware
+app.use(express.static(__dirname + '/public'));
 app.use(morgan('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.engine('ejs', engine);
+app.set('view engine', 'ejs');
 
-app.get('/', function(req, res) {
-    var name = "Manoj";
-    res.json("My name is " + name);
-});
+var mainRoutes = require('./routes/main');
+var userRoutes = require('./routes/user');
+
+app.use(mainRoutes);
+app.use(userRoutes);
+
+
+
+
 
 app.listen(3000, function(err) {
     if (err) throw err;
