@@ -5,6 +5,11 @@ var bodyParser = require('body-parser');
 var ejs = require('ejs');
 var engine = require('ejs-mate');
 var config = require('./config');
+var session = require('express-session');
+var cookieParser = require('cookie-parser');
+var flash = require('express-flash');
+
+
 var User = require('./models/user');
 
 var app = express();
@@ -25,6 +30,15 @@ app.use(express.static(__dirname + '/public'));
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(session({
+    resave: true,
+    saveUninitialized: true,
+    secret: "Manoj@!@"
+}));
+app.use(flash());
+
+
 app.engine('ejs', engine);
 app.set('view engine', 'ejs');
 
