@@ -39,6 +39,8 @@ app.use(session({
     store: new MongoStore({ url: secret.database, autoReconnect: true })
 }));
 app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session()); //For serialize and deserialize
 
 
 app.engine('ejs', engine);
