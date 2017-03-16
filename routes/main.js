@@ -2,6 +2,7 @@ var router = require('express').Router();
 var Category = require('../models/category');
 var Cart = require('../models/cart');
 var Product = require('../models/product');
+var stripe = require('stripe')('sk_test_8kFB4T78eev3uNHoohUWKSWK');
 
 function paginate(req, res, next) {
 
@@ -159,6 +160,22 @@ router.get('/product/:id', function(req, res, next) {
     });
 });
 
+router.post('/payment', function(req, res, next) {
+
+    var stripeToken = req.body.stripeToken;
+    var currentCharges = Math.round(req.body.stripeMoney * 100); // Since the cost is in cents so multiplied by 100
+    // Create a new customer and then a new charge for that customer:
+    stripe.customers.create({
+        source: stripeToken
+    }).then(function(customer) {
+        return stripe.charges.create({
+            amount: currentCharges,
+            currency: 'usd',
+            customer: customer.id
+        });
+    });
+    res.redirect('/profile');
+});
 
 
 module.exports = router;
